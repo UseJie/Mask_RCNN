@@ -1,5 +1,4 @@
 import os
-import sys
 
 def batch_rename(path):
     # 批处理改名#
@@ -13,7 +12,6 @@ def batch_rename(path):
          new_filename = filename_list[0]+'_'+filename_list[1]+'.jpg'
          os.rename(os.path.join(filename), os.path.join(new_filename))
          print(new_filename)
-
 
 if __name__ == '__main__':
     batch_rename('.')

@@ -52,10 +52,26 @@ class CatDataset(utils.Dataset):
 
         # Train or validation dataset?
         # Directory structure is
-        # dataset_dir/train/......
-        # dataset_dir/val/......
+        # dataset_dir/catdatasets/train/......
+        # dataset_dir/catdatasets/val/......
         assert subset in ["train", "val"]
-        pass
+        dataset_dir = os.path.join(dataset_dir, subset)
+
+        # Load annotations
+        # 我们使用lableme标注的图片并且生成json文件
+        # 读取一个文件夹下所有的json文件
+        if subset is 'train':
+            filenames = os.listdir(dataset_dir)
+            print(filenames)
+            annotations = []
+            for filename in filenames:
+                # 结果是一个字典包含：label，point，group_id，shape_type，flags
+                # filename_annotation = list(json.load(open(dataset_dir.join(filename)))['shapes'])[0]
+                # print(filename_annotation)
+                pass
+        elif subset is 'val':
+            print('current directory is val')
+            pass
 
     def load_mask(self, image_id):
         pass
@@ -63,3 +79,6 @@ class CatDataset(utils.Dataset):
     def image_reference(self, image_id):
         pass
 
+if __name__ == '__main__':
+    cat = CatDataset()
+    cat.load_cat('/Users/JIE/GitHub/Mask_RCNN/samples/balloon/catdatasets/', 'train')
