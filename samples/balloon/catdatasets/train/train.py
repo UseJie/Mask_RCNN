@@ -35,6 +35,7 @@ ROOT_DIR = os.path.abspath("../../")
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
+sys.path.append('/Users/JIE/GitHub/Mask_RCNN/mrcnn')    # 想将目录mrcnn添加到系统路径当中
 from mrcnn.config import Config
 from mrcnn import model as modellib, utils
 
@@ -179,10 +180,48 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
         print("Running on {}".format(args.image))
         # Read image
         image = skimage.io.imread(args.image)
-        pass
-    elif video_path:
-        pass
+        # Detect objects
+        r = model.detect([image], verbose=1)[0]
+        # Color splash
+        splash = color_splash(image, r['masks'])
+        # Save output
+        file_name = "splash_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
+        skimage.io.imsave(file_name, splash)
 
+    elif video_path:
+        import cv2
+        # Video capture
+        vcapture = cv2.VideoCapture(video_path)
+        width = int(vcapture.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(vcapture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fps = vcapture.get(cv2.CAP_PROP_FPS)
+
+        # Define codec and create video writer
+        file_name = "splash_{:%Y%m%dT%H%M%S}.avi".format(datetime.datetime.now())
+        vwriter = cv2.VideoWriter(file_name,
+                                  cv2.VideoWriter_fourcc(*'MJPG'),
+                                  fps, (width, height))
+
+        count = 0
+        success = True
+        while success:
+            print("frame: ", count)
+            # Read next image
+            success, image = vcapture.read()
+            if success:
+                # OpenCV returns images as BGR, convert to RGB
+                image = image[..., ::-1]
+                # Detect objects
+                r = model.detect([image], verbose=0)[0]
+                # Color splash
+                splash = color_splash(image, r['masks'])
+                # RGB -> BGR to save image to video
+                splash = splash[..., ::-1]
+                # Add image to video writer
+                vwriter.write(splash)
+                count += 1
+        vwriter.release()
+    print("Save to", file_name)
 
 # #Training
 # dataset_train = CatDataset()
@@ -284,7 +323,7 @@ if __name__ == '__main__':
     elif args.weights.lower() == "last":
         # Find last trained weights
         weights_path = model.find_last()
-    elif args.weight.lower() == "imagenet":
+    elif args.weights.lower() == "imagenet":
         # Start from ImageNet trained weight
         weights_path = model.get_imagenet_weights()
     else:

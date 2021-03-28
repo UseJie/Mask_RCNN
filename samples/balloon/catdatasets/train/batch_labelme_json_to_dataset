@@ -1,0 +1,7 @@
+#!/bin/bash
+dir=`ls /Users/JIE/GitHub/Mask_RCNN/samples/balloon/catdatasets/train/json`
+path = "/Users/JIE/GitHub/Mask_RCNN/samples/balloon/catdatasets/train/json"
+for i in $dir
+do
+    labelme_json_to_dataset ${paht}$i
+done

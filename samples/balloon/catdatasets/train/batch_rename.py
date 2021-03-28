@@ -7,6 +7,8 @@ def batch_rename(path):
      filenames = os.listdir(path)
      for filename in filenames:
          filename_list = filename.split('.')
+         if len(filename_list) !=3:
+             continue
          if filename_list[0] != 'cat' or filename_list[2] == 'json':
              continue
          new_filename = filename_list[0]+'_'+filename_list[1]+'.jpg'
